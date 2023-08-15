@@ -29,6 +29,7 @@ try {
 
 app.use(cors());
 app.use("/public", express.static(process.cwd() + "/public"));
+app.use("/uploads", express.static(process.cwd() + "/uploads"));
 
 app.get("/", function (req, res) {
   res.sendFile(process.cwd() + "/views/index.html");
