@@ -37,13 +37,15 @@ app.get("/", function (req, res) {
 const { saveFileDetails } = require("./controller/fileUpload");
 // Create a POST endpoint for '/api/fileanalyse' route
 app.post("/api/fileanalyse", (req, res, next) => {
+  console.log("File request is: ", req.file);
+
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       console.error("File Upload Error: ", err);
     } else if (err) {
       console.error("Unknown File Upload Error: ", err);
     }
-    console.log("File request is: ", req.file);
+    
     saveFileDetails(req.file, function (err, data) {
       if (err) {
         return next(err);
