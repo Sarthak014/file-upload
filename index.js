@@ -1,50 +1,47 @@
-var express = require("express");
-var cors = require("cors");
-var multer = require("multer");
+const express = require("express");
+const cors = require("cors");
+const multer = require("multer");
+const mongoose = require("mongoose");
+const path = require('path');
+const { saveFileDetails } = require("./controller/fileUpload");
 require("dotenv").config();
 
-var app = express();
+const app = express();
 
-var multerStorage = multer.diskStorage({
+app.use(cors());
+app.use("/public", express.static(process.cwd() + "/public"));
+
+
+const multerStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // destination is used to specify the path of the directory in which the files have to be stored
-    cb(null, "./uploads");
+    cb(null, path.join(__dirname, "uploads")); // Specify the destination folder for uploads
   },
   filename: function (req, file, cb) {
-    // It is the filename that is given to the saved file.
-    cb(null, file.originalname);
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname)); // Append unique suffix to filenames
   },
 });
 
 // Use diskstorage option in multer
 const upload = multer({ storage: multerStorage }).single("upfile");
 
-// import Mongoose
-let mongoose;
-try {
-  mongoose = require("mongoose");
-} catch (e) {
-  console.log(e);
-}
-
-app.use(cors());
-app.use("/public", express.static(process.cwd() + "/public"));
-app.use("/uploads", express.static(process.cwd() + "/uploads"));
-
 app.get("/", function (req, res) {
   res.sendFile(process.cwd() + "/views/index.html");
 });
 
-const { saveFileDetails } = require("./controller/fileUpload");
 // Create a POST endpoint for '/api/fileanalyse' route
 app.post("/api/fileanalyse", (req, res, next) => {
-  console.log("File request is: ", req.file);
-
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       console.error("File Upload Error: ", err);
+      return res.status(400).json({ error: "File upload error" });
     } else if (err) {
       console.error("Unknown File Upload Error: ", err);
+      return res.status(500).json({ error: "Unknown file upload error" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
     }
     
     saveFileDetails(req.file, function (err, data) {
@@ -63,12 +60,8 @@ app.post("/api/fileanalyse", (req, res, next) => {
 
 // Error handler
 app.use(function (err, req, res, next) {
-  if (err) {
-    res
-      .status(err.status || 500)
-      .type("txt")
-      .send(err.message || "SERVER ERROR");
-  }
+  console.error("Server Error:", err);
+  res.status(err.status || 500).json({ error: "Server error" });
 });
 
 // Mongoose Connection
