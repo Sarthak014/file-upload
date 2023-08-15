@@ -16,7 +16,7 @@ const saveFileDetails = async (filedetails, done) => {
 
     done(null, response);
   } catch (error) {
-    done(error, nul);
+    done(error, null);
   }
 };
 

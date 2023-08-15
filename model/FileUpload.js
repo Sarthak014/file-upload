@@ -8,8 +8,6 @@ const schema = {
   },
   type: {
     type: String,
-    required: true,
-    unique: true,
   },
   size: {
     type: Number,

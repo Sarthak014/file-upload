@@ -1,10 +1,23 @@
-var express = require('express');
-var cors = require('cors');
-const multer  = require('multer');
-require('dotenv').config()
+var express = require("express");
+var cors = require("cors");
+var multer = require("multer");
+require("dotenv").config();
 
 var app = express();
-const upload = multer({ dest: '/public/' }).single("upfile");
+
+var multerStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // destination is used to specify the path of the directory in which the files have to be stored
+    cb(null, "./uploads");
+  },
+  filename: function (req, file, cb) {
+    // It is the filename that is given to the saved file.
+    cb(null, file.originalname);
+  },
+});
+
+// Use diskstorage option in multer
+const upload = multer({ storage: multerStorage }).single("upfile");
 
 // import Mongoose
 let mongoose;
@@ -14,24 +27,23 @@ try {
   console.log(e);
 }
 
-
 app.use(cors());
-app.use('/public', express.static(process.cwd() + '/public'));
+app.use("/public", express.static(process.cwd() + "/public"));
 
-app.get('/', function (req, res) {
-  res.sendFile(process.cwd() + '/views/index.html');
+app.get("/", function (req, res) {
+  res.sendFile(process.cwd() + "/views/index.html");
 });
 
-const { saveFileDetails } = require('./controller/fileUpload');
+const { saveFileDetails } = require("./controller/fileUpload");
 // Create a POST endpoint for '/api/fileanalyse' route
 app.post("/api/fileanalyse", (req, res, next) => {
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
-      console.error('File Upload Error: ', err);
+      console.error("File Upload Error: ", err);
     } else if (err) {
-      console.error('Unknown File Upload Error: ', err);
+      console.error("Unknown File Upload Error: ", err);
     }
-    console.log('File request is: ', req.file);
+    console.log("File request is: ", req.file);
     saveFileDetails(req.file, function (err, data) {
       if (err) {
         return next(err);
@@ -40,7 +52,7 @@ app.post("/api/fileanalyse", (req, res, next) => {
         console.log("Missing `done()` argument");
         return next({ message: "Missing callback argument" });
       }
-  
+
       return res.json(data);
     });
   });
@@ -72,5 +84,5 @@ mongoose
 // Server Connection
 const port = process.env.PORT || 3000;
 app.listen(port, function () {
-  console.log('Your app is listening on port ' + port)
+  console.log("Your app is listening on port " + port);
 });
