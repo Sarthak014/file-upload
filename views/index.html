@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html>
+   <head>
+      <title>File Upload Metadata</title>
+      <link rel="shortcut icon" href="/public/" type="image/x-icon"/>
+      <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+      <link href="/public/style.css" rel="stylesheet" type="text/css">
+   </head>
+
+   <body>
+      <div class="container">
+        <h2>File Metadata Microservice</h2>
+
+        <section class="view" style="margin-top: 5rem;">
+          <form enctype="multipart/form-data" method="POST" action="/api/fileanalyse">
+            <fieldset>
+              <legend><strong>Upload File</strong></legend>
+              <div style="display: flex;">
+                <input id="file_input" type="file" name="upfile">
+              </div>
+              <input id="button" type="submit" value="Upload">
+            </fieldset>
+          </form>
+        </section>
+      </div>
+
+      <div class="footer">
+        <p>
+          By  
+          <a href="https://github.com/Sarthak014">Sarthak Agarwal</a>
+        </p>
+      </div>
+   </body>
+</html>
