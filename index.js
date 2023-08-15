@@ -4,7 +4,7 @@ const multer  = require('multer');
 require('dotenv').config()
 
 var app = express();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: 'public/' });
 
 app.use(cors());
 app.use('/public', express.static(process.cwd() + '/public'));
